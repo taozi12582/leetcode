@@ -36,4 +36,19 @@ public class HeLanGuoQi {
         System.out.println(Arrays.toString(ints));
     }
 
+    public static void netherlandsFlag(int[] arr, int flag) {
+        if (arr == null || arr.length < 2) {
+            return;
+        }
+        int p1 = -1, p2 = arr.length, i = 0;
+        while (i < p2) {
+            if (arr[i] < flag) {
+                swap(arr, i++, ++p1);
+            } else if (arr[i] > flag) {
+                swap(arr, i, --p2);
+            } else {
+                i++;
+            }
+        }
+    }
 }

@@ -1,5 +1,7 @@
 package tao;
 
+import java.util.Arrays;
+
 public class QuickSort {
     public static void quickSort(int[] arr, int l, int r) {
         if (arr == null || arr.length < 2) {
@@ -36,5 +38,39 @@ public class QuickSort {
         arr[i] = arr[i] ^ arr[j];
         arr[j] = arr[i] ^ arr[j];
         arr[i] = arr[i] ^ arr[j];
+    }
+
+    private static void q(int[] arr, int L, int R) {
+        if (arr == null || L >= R) {
+            return;
+        }
+        int index = L + (int) (Math.random() * (R - L + 1));
+        swap(arr, index, R);
+        int[] ints = netherLandFlag(arr, L, R);
+        q(arr, L, ints[0] - 1);
+        q(arr, ints[1] + 1, R);
+    }
+
+    private static int[] netherLandFlag(int[] arr, int l, int r) {
+        int flag = arr[r];
+        int p1 = l - 1, p2 = r, i = l;
+        while (i < p2) {
+            if (arr[i] < flag) {
+                swap(arr, i++, ++p1);
+            } else if (arr[i] > flag) {
+                swap(arr, i, --p2);
+            } else {
+                i++;
+            }
+        }
+        swap(arr, r, p2);
+        return new int[]{p1 + 1, p2 - 1};
+    }
+
+    public static void main(String[] args) {
+        int[] ints = RandomArray.generateRandomArray(20 , 20);
+        System.out.println(Arrays.toString(ints));
+        q(ints,0,ints.length-1);
+        System.out.println(Arrays.toString(ints));
     }
 }
