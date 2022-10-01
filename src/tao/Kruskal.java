@@ -27,16 +27,23 @@ public class Kruskal {
             List<Node> toSet = setMap.get(to);
             for (Node toNode : toSet) {
                 fromSet.add(toNode);
-                setMap.put(toNode,fromSet);//这里的意思是to节点对应的list就不要了，把自己加到fromList里面后，把自己的集合指向fromList
+                setMap.put(toNode, fromSet);//这里的意思是to节点对应的list就不要了，把自己加到fromList里面后，把自己的集合指向fromList
             }
         }
     }
 
-    public static Set<Edge> kruskalMST(Graph graph){
+    public static Set<Edge> kruskalMST(Graph graph) {
         MySets mySets = new MySets((List<Node>) graph.nodes.values());
         PriorityQueue<Edge> queue = new PriorityQueue<Edge>((a, b) -> a.weight - b.weight);
-        ArrayList<Node> res = new ArrayList<>();
-
+        Set<Edge> res = new HashSet<>();
+        while (!queue.isEmpty()) {
+            Edge edge = queue.poll();
+            if (!mySets.isSameSet(edge.from, edge.to)) {
+                mySets.union(edge.from, edge.to);
+                res.add(edge);
+            }
+        }
+        return res;
     }
 
 
