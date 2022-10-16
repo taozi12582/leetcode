@@ -145,6 +145,31 @@ public class TreeIterate {
 //        System.out.println();
 //        posOrderUnRecur(root);
         TreeOperation.show(n5);
-        widthIterate(n5);
+//        widthIterate(n5);
+        inTree(n5);
+    }
+
+    public static void inTree(TreeNode root) {
+        if (root == null) {
+            return;
+        }
+        Stack<TreeNode> stack = new Stack<>();
+        stack.push(root);
+        TreeNode temp = root;
+        while (temp.left != null) {
+            stack.push(temp.left);
+            temp = temp.left;
+        }
+        while (!stack.isEmpty()) {
+            temp = stack.pop();
+            System.out.println(temp.value);
+            if (temp.right != null) {
+                temp = temp.right;
+                while (temp != null) {
+                    stack.push(temp);
+                    temp = temp.left;
+                }
+            }
+        }
     }
 }

@@ -173,3 +173,148 @@
    ```
 
    > 注意：*这里L是要移出的元素，所以初始值为0，R是要加入的元素，所以初始值为w（数组下标）
+
+#### 单调栈
+
+> 找到每个值的左边离自己最近的比自己大的数，和右边离自己最近的比自己大的数
+
+1. **举例（无重复值）**
+
+<img src="./img/DD.jpg" alt="dd" style="zoom:19%;" />
+
+​		例子如上所示
+
+2. **流程分析**
+
+   <img src="./img/DD2.jpg" alt="DD2" style="zoom:19%;" />
+
+   * 定义一个栈，要求栈内元素从底往上递减，栈中元素为数组的下标，因为数组下标可以存储更多的信息
+
+   * 栈为空，0~5入栈。4<5，1~4入栈。3<4，2~3入栈。
+
+   * 6>3，那么3~6不能入栈，此时要弹出栈中元素，直到栈为空或者栈顶的元素对应值大于自己，每弹出一个元素，就要记录它的值。
+
+   * 弹出元素记录值时，它左边离自己最近的就是栈顶元素，右边离最近的就是当前要入栈的元素。
+
+     > 时间复杂度，O(N)，因为所有元素都出栈进栈一次。
+     >
+     > 若该位置的值要让栈中的元素弹出的话，因为是从左到右依次遍历的，所以该位置的值就是要弹出元素的右边离自己最近的大于自己的数，栈底邻居就是左边离自己最近的大于自己的数。
+
+3. **有重复值**
+
+   <img src="./img/DD3.jpg" alt="DD3" style="zoom:19%;" />
+
+   * 与无重复值一样，但是元素弹出栈取结果的时候，要取出栈顶链表的末尾信息
+
+   * 弹出的元素要取栈顶元素的链表头
+
+   * 压入栈的时候，如果元素对应值与栈顶元素对应值相同，那么把下标添加到链表的末尾。
+
+     > 入栈和取结果的时候都是链表尾，出栈的时候是链表头
+
+4. **代码实现**
+
+   ```java
+   	public static String[] getLRMax(int[] arr) {
+           if (arr == null || arr.length <= 1) {
+               return new String[0];
+           }
+           Stack<List<Integer>> stack = new Stack<>();
+           String[] res = new String[arr.length];
+           for (int i = 0; i < arr.length; i++) {
+               while (!stack.isEmpty() && arr[stack.peek().get(0)] < arr[i]) {
+                   List<Integer> pop = stack.pop();
+                   int index = pop.remove(0);
+                   int lm = stack.isEmpty() ? -999 : arr[stack.peek().get(stack.peek().size() - 1)];
+                   int rm = arr[i];
+                   if (!pop.isEmpty()) {
+                       stack.push(pop);
+                   }
+                   res[index] = "(" + lm + "," + rm + ")";
+               }
+               if (stack.isEmpty() || arr[stack.peek().get(0)] > arr[i]) {
+                   ArrayList<Integer> temp = new ArrayList<>();
+                   temp.add(i);
+                   stack.push(temp);
+               } else if (arr[stack.peek().get(0)] == arr[i]) {
+                   stack.peek().add(i);
+               }
+           }
+           while (!stack.isEmpty()) {
+               List<Integer> pop = stack.pop();
+               Integer index = pop.remove(0);
+               int rm = -999;
+               int lm = stack.isEmpty() ? -999 : arr[stack.peek().get(stack.peek().size() - 1)];
+               if (!pop.isEmpty()) {
+                   stack.push(pop);
+               }
+               res[index] = res[index] = "(" + lm + "," + rm + ")";
+           }
+           return res;
+       }
+   ```
+
+   #### 最大指标
+
+   1. **题目描述**
+
+      数组中累计和与最小值的乘积，称为指标A。给定一个数组，返回子数组中，指标A最大的值。
+
+   2. **流程分析**
+
+      遍历数组中的每个元素，让该元素成为数组中的最小的值，再向左右展开到最大长度，于是就可以求出当前情况下的指标值。
+
+      展开可以使用单调栈，即左右两边离自己最近的第一个比自己小的元素。
+
+   3. **代码实现**
+
+      ```java
+      	public static int getMax(int[] arr) {
+              if (arr == null || arr.length == 0) {
+                  return 0;
+              }
+              int res = 0;
+              Stack<List<Integer>> stack = new Stack<>();
+              for (int i = 0; i < arr.length; i++) {
+                  while (!stack.isEmpty() && arr[stack.peek().get(0)] > arr[i]) {
+                      List<Integer> pop = stack.pop();
+                      pop.remove(0);
+                      int lmIndex = stack.isEmpty() ? -1 : stack.peek().get(stack.peek().size() - 1);
+                      res = Math.max(arr[i] * getSum(arr, lmIndex + 1, i - 1), res);
+                      if (!pop.isEmpty()) {
+                          stack.push(pop);
+                      }
+                  }
+                  if (stack.isEmpty() || arr[i] > arr[stack.peek().get(0)]) {
+                      ArrayList<Integer> temp = new ArrayList<>();
+                      temp.add(i);
+                      stack.push(temp);
+                  } else if (arr[stack.peek().get(0)] == arr[i]) {
+                      stack.peek().add(i);
+                  }
+              }
+              while (!stack.isEmpty()) {
+                  List<Integer> pop = stack.pop();
+                  int index = pop.remove(0);
+                  int lmIndex = stack.isEmpty() ? -1 : stack.peek().get(stack.peek().size() - 1);
+                  if (!pop.isEmpty()) {
+                      stack.push(pop);
+                  }
+                  res = Math.max(res, arr[index] * getSum(arr, lmIndex + 1, index));
+              }
+              return res;
+          }
+      
+          private static int getSum(int[] arr, int l, int r) {
+              if (l == r) {
+                  return arr[l];
+              }
+              int res = 0;
+              for (int i = l; i <= r; i++) {
+                  res += arr[i];
+              }
+              return res;
+          }
+      ```
+
+      

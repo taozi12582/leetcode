@@ -14,7 +14,7 @@ public class IsBST {
         if (!flag) {
             return false;
         }
-        if (root.value >= preValue) {
+        if (root.value <= preValue) {
             return false;
         }
         preValue = root.value;
@@ -80,5 +80,61 @@ public class IsBST {
             isBST = false;
         }
         return new ReturnData(max, min, isBST);
+    }
+
+    public static boolean isBSTMorris(TreeNode root) {
+        if (root == null) {
+            return true;
+        }
+        int pre = Integer.MIN_VALUE;
+        TreeNode cur = root;
+        while (cur != null) {
+            if (cur.left != null) {
+                TreeNode mr = cur.left;
+                while (mr.right != null && mr.right != cur) {
+                    mr = mr.right;
+                }
+                if (mr.right == null) {
+                    mr.right = cur;
+                    cur = cur.left;
+                } else {
+                    mr.right = null;
+                    if (pre >= cur.value) {
+                        return false;
+                    }
+                    pre = cur.value;
+                    cur = cur.right;
+                }
+            } else {
+                if (pre >= cur.value) {
+                    return false;
+                }
+                pre = cur.value;
+                cur = cur.right;
+            }
+        }
+        return true;
+    }
+
+
+    public static void main(String[] args) {
+        TreeNode n5 = new TreeNode(5);
+        TreeNode n6 = new TreeNode(6);
+        TreeNode n8 = new TreeNode(8);
+        TreeNode n9 = new TreeNode(9);
+        TreeNode n10 = new TreeNode(10);
+        TreeNode n11 = new TreeNode(11);
+        TreeNode n12 = new TreeNode(12);
+        TreeNode n13 = new TreeNode(13);
+        n9.left = n6;
+        n6.left = n5;
+        n6.right = n8;
+        n9.right = n12;
+        n12.left = n10;
+        n12.right = n11;
+//        n10.right = n11;
+        n12.right = n13;
+        TreeOperation.show(n9);
+        System.out.println(isBSTMorris(n9));
     }
 }
