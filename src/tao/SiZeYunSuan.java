@@ -17,8 +17,23 @@ public class SiZeYunSuan {
         return sum(a, sum(~b, 1));
     }
 
+    public static int multiply(int a, int b) {
+        int res = 0;
+        int num = 0;
+        while (b != 0) {
+            if ((b & 1) != 0) {
+                res = sum(res, a << num);
+            }
+            num++;
+            b >>>= 1;
+        }
+        return res;
+    }
+
+
     public static void main(String[] args) {
-        System.out.println(sum(123, 431));
-        System.out.println(sub(77,44));
+        System.out.println(sum(-10, -431));
+        System.out.println(sub(77, 44));
+        System.out.println(multiply(12, 5));
     }
 }
